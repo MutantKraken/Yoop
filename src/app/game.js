@@ -10,8 +10,7 @@ export const run = (THREE, OrbitControlsClass, setScore) => {
   for (var i = 0; i < buttons.length; i++) {
 
   }
-  buttons[0].onclick = () => {
-    console.log("lvl1");
+  buttons[2].onclick = () => {
+    graphics.start();
   }
-  buttons[1]
 };
