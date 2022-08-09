@@ -1,13 +1,11 @@
 import { KeyBoard } from "./keyboard";
 
-const canv = document.getElementById("bg");
-
 export class Graphics {
   constructor (THREE, OrbitControlsClass) {
     this.THREE = THREE;
     this.run = false;
 
-    this.renderer = new this.THREE.WebGLRenderer({canvas: canv,});
+    this.renderer = new this.THREE.WebGLRenderer({canvas: document.querySelector("#bg"),});
     this.resize();
     this.controls = new OrbitControlsClass(this.camera, this.renderer.domElement);
 
@@ -36,7 +34,6 @@ export class Graphics {
   start() {
     this.run = true;
     this.kb.start();
-    canv.removeAttribute("hidden");
     window.addEventListener('resize', this.resize, true);
 
     this.scene = new this.THREE.Scene();
@@ -61,7 +58,6 @@ export class Graphics {
     this.renderer.clear();
     const clearScene = new this.THREE.Scene();
     clearScene.background = new this.THREE.Color( 0xffffff );
-    canv.setAttribute("hidden", true);
     this.renderer.render(clearScene, this.camera);
     this.run = false;
     this.kb.stop();

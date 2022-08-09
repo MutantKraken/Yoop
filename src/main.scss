@@ -8,8 +8,13 @@ $primary: teal;
   left: 0;
   right: 0;
 }
+#back-level-select {
+  position: absolute;
+  z-index:2;
+}
 canvas {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1;
 }

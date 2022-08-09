@@ -7,7 +7,6 @@
     <title>Yoop!</title>
   </head>
   <body id="body">
-    <canvas id="bg" hidden="true"></canvas>
     <div id="play-menu">
       <h2 class="text-center mt-5">
         Yoop!
@@ -29,8 +28,13 @@
     </div>
     <div id="level-select" class="text-center" hidden="true">
       <p>Levels</p>
-      <br>
-      <button type="button" class="btn btn-primary">1</button>
+      <div id="buttons-wrapper">
+
+      </div>
+    </div>
+    <div id="canvas-wrapper" hidden="true">
+      <button type="button" id="back-level-select" class="btn btn-primary">Back</button>
+      <canvas id="bg"></canvas>
     </div>
   </body>
 </html>
