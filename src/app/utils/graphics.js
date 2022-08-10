@@ -1,67 +1,112 @@
-import { KeyBoard } from "./keyboard";
+import { createMapScene } from "./map";
+import { levels } from "./level";
+import { Game } from "./game";
+var THREE;
+var OrbitControls;
 
-export class Graphics {
-  constructor (THREE, OrbitControlsClass) {
-    this.THREE = THREE;
-    this.run = false;
+var run = false;
+var startTime;
+var fpsInterval;
 
-    this.renderer = new this.THREE.WebGLRenderer({canvas: document.querySelector("#bg"),});
-    this.resize();
-    this.controls = new OrbitControlsClass(this.camera, this.renderer.domElement);
+var renderer;
+var camera;
+var controls;
+var scene;
+const game = new Game();
 
-    this.kb = new KeyBoard();
+export function setLib(three, oc) {
+  THREE = three;
+  OrbitControls = oc;
+}
+
+export class Cube {
+  constructor(size, mat, castShadow = true) {
+    const geometry = new THREE.BoxGeometry( size.x, size.y, size.z);
+    
+    this.position = new THREE.Vector3();
+    this.size = size;
+    this.cube = new THREE.Mesh(geometry, mat);
+    this.cube.receiveShadow = true;
+    this.cube.castShadow = castShadow;
+    this.updatePosition();
   }
-
-  resize() {
-    this.camera = new this.THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.renderer.setPixelRatio( window.devicePixelRatio );
-    this.renderer.setSize( window.innerWidth, window.innerHeight );
-
-    this.camera.position.setZ(30);
+  setPosition(x, y, z) {
+    this.position = new THREE.Vector3(x, y, z);
+    this.updatePosition();
   }
-  animate() {
-    if (this.run === false) {
-      return;
-    }
-    requestAnimationFrame(() => {this.animate()});
-    this.torus.rotation.x += 0.01;
-    this.torus.rotation.y += 0.005;
-    this.torus.rotation.z += 0.01;
-
-    this.controls.update();
-    this.renderer.render(this.scene, this.camera);
+  getPosition() {
+    return this.position;
   }
-  start() {
-    this.run = true;
-    this.kb.start();
-    window.addEventListener('resize', this.resize, true);
-
-    this.scene = new this.THREE.Scene();
-    this.scene.background = new this.THREE.Color( 0xefefff );
-    this.camera.position.setZ(30);
-
-    const geometry = new this.THREE.TorusGeometry(10, 3, 16, 100);
-    const material = new this.THREE.MeshStandardMaterial({color: 0xFF6347});
-    this.torus = new this.THREE.Mesh(geometry, material);
-    this.scene.add(this.torus);
-
-    const pointLight = new this.THREE.PointLight(0xffffff);
-    pointLight.position.set(5,5,5);
-    const ambientLight = new this.THREE.AmbientLight(0xffffff);
-    this.scene.add(pointLight, ambientLight);
-
-    const gridHelper = new this.THREE.GridHelper(200, 50);
-    this.scene.add(gridHelper);
-    this.animate();
+  translate(x, y, z) {
+    this.position.x += x;
+    this.position.y += y;
+    this.position.z += z;
+    this.updatePosition();
   }
-  stop() {
-    this.renderer.clear();
-    const clearScene = new this.THREE.Scene();
-    clearScene.background = new this.THREE.Color( 0xffffff );
-    this.renderer.render(clearScene, this.camera);
-    this.run = false;
-    this.kb.stop();
-    window.removeEventListener('resize', this.resize, true);
-    this.scene = undefined;
+  updatePosition() {
+    this.cube.position.setX(this.position.x + this.size.x/2);
+    this.cube.position.setY(this.position.y + this.size.y/2);
+    this.cube.position.setZ(this.position.z + this.size.z/2);
   }
+  getMesh() {
+    return this.cube;
+  }
+}
+
+export function init() {
+  renderer = new THREE.WebGLRenderer({canvas: document.querySelector("#bg"),});
+  renderer.shadowMap.enabled = true;
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  controls = new OrbitControls(camera, renderer.domElement);
+}
+
+function resize() {
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function animate() {
+  const now = Date.now();
+  const elapsed = now - startTime;
+  if (run === false) {
+    return;
+  }
+  if (elapsed > fpsInterval) {
+    startTime = now - (elapsed % fpsInterval);
+    game.update();
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(animate);
+}
+
+function startAnimating(fps) {
+  fpsInterval = 1000 / fps;
+  startTime = Date.now();
+  animate();
+}
+
+function setCameraPosition(level) {
+  const rows = levels[level-1].rows;
+  const cols = levels[level-1].cols;
+  const length = Math.sqrt(rows*rows + cols*cols);
+  camera.position.set(rows, length/1.5, cols/2);
+}
+
+export function start(level) {
+  run = true;
+  resize();
+  setCameraPosition(level);
+  window.addEventListener('resize', resize, true);
+  
+  const dat = createMapScene(THREE, level);
+  scene = dat[0];
+  game.start(levels[level-1], dat[1]);
+  startAnimating(50);
+}
+
+export function stop() {
+  run = false;
+  game.stop();
+  window.removeEventListener('resize', resize, true);
 }

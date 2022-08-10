@@ -7,10 +7,10 @@
     <title>Yoop!</title>
   </head>
   <body id="body">
-    <div id="play-menu">
-      <h2 class="text-center mt-5">
+    <div id="play-page">
+      <h1 class="text-center mt-5">
         Yoop!
-      </h2>
+      </h1>
       <div class="text-center mt-5">
         Made By Franchesca and her friends
       </div>
@@ -26,15 +26,21 @@
         <button type="button" id="play-button" class="btn btn-primary">PLAY</button>
       </div>
     </div>
-    <div id="level-select" class="text-center" hidden="true">
-      <p>Levels</p>
+    <div id="level-page" class="text-center mt-5" hidden="true">
+      <h2>Levels</h2>
       <div id="buttons-wrapper">
-
+      </div>
+      <br><br>
+      <div class="text-center mt-5">
+        Use WASD to move and the mouse to pan and orientate
       </div>
     </div>
-    <div id="canvas-wrapper" hidden="true">
-      <button type="button" id="back-level-select" class="btn btn-primary">Back</button>
+    <div id="game-page" hidden="true">
       <canvas id="bg"></canvas>
+      <button type="button" id="back-level-select" class="btn btn-primary">Back</button>
+    </div>
+    <div id="win-page" hidden="true">
+      <h1 id="win-text">You Won</h1>
     </div>
   </body>
 </html>

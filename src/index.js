@@ -1,25 +1,19 @@
 //import "bootstrap"; extra tools for js
-import {run} from "./app/game";
+import { run } from "./app/menu";
+import { setPage } from "./app/utils/page";
 import "./main.scss";
 
-const playMenu = document.getElementById("play-menu");
 const playButton = document.getElementById("play-button");
-const userInput = document.getElementById("username-input");
+const nameInput = document.getElementById("username-input");
 
 (async () => {
-  const DataBase = (await import("./vendor")).DataBase;
-  const THREE = await import("three");
-  const OrbitControls = (await import("three/examples/jsm/controls/OrbitControls")).OrbitControls;
-  
+  const DataBase = (await import("./firebase")).DataBase;
   const db = new DataBase();
   db.login();
-
+  
   playButton.onclick = () => {
-    setTimeout(() => {
-      db.setName(userInput.value);
-      playMenu.hidden = true;
-      
-      run(THREE, OrbitControls, db.setScore);
-    }, 50);
+    setPage("level-page");
+    db.setName(nameInput.value);
+    run(db.setScore);
   };
 })();
